@@ -12,6 +12,8 @@ if(length(database())=12,sleep(5),1)
     > REGEXP 是模糊查询。这样执行`select 2 REGEXP 2;`,会返回1，匹配不到会返回0
 4. `left(user(),1)="r"`
     > 查询用户名的第一个字母
+5. `'||decode(substr(user,1,1),'a','1','2')||'`
+    > oracle查询语句
 
 ## 基本的查询
 
