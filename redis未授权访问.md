@@ -7,7 +7,7 @@
 `docker run -tid -p 2222:22 -p 6379:6379 ubuntu`  
 安装ssh，redis，vim
 `apt-get update`  
-`apt-get install open-ssh-server`  
+`apt-get install openssh-server`  
 `service ssh start`  
 `mkdir /root/.ssh`  
 `apt-get install redis`  
