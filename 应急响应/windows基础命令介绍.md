@@ -33,6 +33,11 @@ rd G:\test\11\
 - 删除文件  
 del 11.txt
 
+## IIS
+
+- 快速打开 Internet 信息服务(IIS)管理器  
+inetmgr.exe
+
 ## windows日志
 
 Win2003时间ID|Win2008时间ID|事件类型|描述
