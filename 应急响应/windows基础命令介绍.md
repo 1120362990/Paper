@@ -70,3 +70,13 @@ C:\>netstat -na | find /C  /I  "Tcp"
 /N    ：     显示行号。  
 /I    ：     搜索字符串时忽略大小写。  
 /OFF[LINE] ： 不要跳过具有脱机属性集的文件。  
+
+## windows cmd 下载文件
+
+1. win7 cmd 远程文件下载  
+`certutil -urlcache -split -f http://192.168.3.211:8000/1.txt 11.txt`  
+
+2. powershell 下载文件 win10测试成功  
+cmd 下进入powershell的方法 直接输入 powershell  
+`$client = new-object System.Net.WebClient`  
+`$client.DownloadFile('http://192.168.3.211:8000/1.txt','D:\22.txt')`  
