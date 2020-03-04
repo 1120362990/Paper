@@ -34,7 +34,14 @@
 
 ## study-note
 
-这里面基本上记录了自己一些杂七杂八的东西，忽略吧
+- python相关学习记录
+- ftp快速搭建及连接
+- github某些操作简介
+- iptables常用命令介绍
+- JS相关
+- md测试
+- screen-ssh保持命令执行
+- upload-labs靶场文件上传测试
 
 ## tools
 
